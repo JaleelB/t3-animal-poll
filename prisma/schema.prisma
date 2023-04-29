@@ -6,12 +6,23 @@ generator client {
 }
 
 datasource db {
-    provider = "sqlite"
+    provider = "postgresql"
     url      = env("DATABASE_URL")
 }
 
-model Example {
-    id        String   @id @default(cuid())
+model PollQuestion {
+    id        Int   @id @default(autoincrement())
+    question     String
+    imageSrc     String
+    options   Json
+    responses   PollResponse[]
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+}
+model PollResponse {
+  id        Int      @id @default(autoincrement())
+  pollQuestion      PollQuestion     @relation(fields: [pollId], references: [id])
+  pollId    Int
+  option    String
+  createdAt DateTime @default(now())
 }

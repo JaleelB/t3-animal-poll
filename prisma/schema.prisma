@@ -17,12 +17,11 @@ model PollQuestion {
     options   Json
     responses   PollResponse[]
     createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
 }
 model PollResponse {
   id        Int      @id @default(autoincrement())
   pollQuestion      PollQuestion     @relation(fields: [pollId], references: [id])
   pollId    Int
-  option    String
+  option    String @db.VarChar(255)
   createdAt DateTime @default(now())
 }

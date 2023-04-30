@@ -18,6 +18,7 @@ model PollQuestion {
     responses   PollResponse[]
     createdAt DateTime @default(now())
 }
+
 model PollResponse {
   id        Int      @id @default(autoincrement())
   pollQuestion      PollQuestion     @relation(fields: [pollId], references: [id])

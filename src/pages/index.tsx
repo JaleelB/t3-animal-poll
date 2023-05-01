@@ -7,7 +7,7 @@ const Home: NextPage = () => {
 
   const handleStart = () => {
     // Navigate to the first question of the poll
-    router.push('/poll/1');
+    router.push('/poll');
   };
 
   return <StartScreen onStart={handleStart} />;

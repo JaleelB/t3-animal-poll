@@ -2,8 +2,17 @@ import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
 export const pollRouter = createTRPCRouter({
-  getAll: publicProcedure.query(async ({ ctx }) => {
-    return await ctx.prisma.pollQuestion.findMany({
+  getPoll: publicProcedure
+  .input(
+    z.object({
+      pollId: z.number(),
+    })
+  )
+  .query(async ({ ctx, input }) => {
+    return await ctx.prisma.pollQuestion.findUnique({
+      where:{
+        id: input.pollId,
+      },
       select: {
         id: true,
         question: true,
@@ -11,6 +20,9 @@ export const pollRouter = createTRPCRouter({
         options: true,
       },
     });
+  }),
+  getLength: publicProcedure.query(async ({ ctx }) => {
+    return (await ctx.prisma.pollQuestion.findMany()).length;
   }),
   submit: publicProcedure.input(
     z.object({

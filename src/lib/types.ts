@@ -6,6 +6,15 @@ export type PollQuestion = {
     options: string[];
 }
 
+export type PollData = {
+    id: number;
+    maxLength: number;
+    questionNumber: number;
+    imageUrl: string;
+    question: string;
+    options: [string, string];
+};
+
 export type PollResponse = {
     id: number;
     pollId: number;

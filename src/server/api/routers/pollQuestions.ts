@@ -43,5 +43,70 @@ export const pollRouter = createTRPCRouter({
     });
   
     return newResponse;
-  })
+  }),
+  // New procedure to fetch the total count of "yes" and "no" answers
+  getTotalAnswers: publicProcedure.query(async ({ ctx }) => {
+    const totalYes = await ctx.prisma.pollResponse.count({
+      where: {
+        option: "yes",
+      },
+    });
+    const totalNo = await ctx.prisma.pollResponse.count({
+      where: {
+        option: "no",
+      },
+    });
+    return { totalYes, totalNo };
+  }),
+  // New procedure to fetch the percentage of responses for each option in every question
+  getQuestionStatistics: publicProcedure.query(async ({ ctx }) => {
+    const calculatePercentage = (count: number, total: number) => {
+      return total > 0 ? Math.round((count / total) * 100) : 0;
+    };
+  
+    const questions = await ctx.prisma.pollQuestion.findMany({
+      select: {
+        id: true,
+        question: true,
+        options: true,
+      },
+    });
+  
+    const statistics = await Promise.all(
+      questions.map(async (question) => {
+        const totalResponses = await ctx.prisma.pollResponse.count({
+          where: {
+            pollQuestion: {
+              id: question.id,
+            },
+          },
+        });
+  
+        const optionStats: Record<string, number> = {};
+  
+        // Check if question.options is not null, and use an empty array as a fallback
+        // Create a new variable to store options as an array of strings
+        const optionsArray: string[] = question.options ? (question.options as string[]) : [];
+  
+        for (const option of optionsArray) {
+          const optionCount = await ctx.prisma.pollResponse.count({
+            where: {
+              pollQuestion: {
+                id: question.id,
+              },
+              option,
+            },
+          });
+          optionStats[option] = calculatePercentage(optionCount, totalResponses);
+        }
+  
+        return {
+          ...question,
+          statistics: optionStats,
+        };
+      })
+    );
+  
+    return statistics;
+  }),  
 });

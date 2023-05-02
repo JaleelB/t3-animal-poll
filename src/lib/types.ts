@@ -1,4 +1,3 @@
-// src/types.ts
 export type PollQuestion = {
     id: number;
     question: string;
@@ -28,5 +27,21 @@ export type VoteInput = {
 
 export type VoteResponse = {
     message: string;
+}
+
+export interface TotalAnswers {
+    totalYes: number;
+    totalNo: number;
+}
+  
+export interface PollOptionStats {
+    [option: string]: number;
+}
+
+export interface PollStatistics {
+    id: number;
+    question: string;
+    options: string[] | null;
+    statistics: PollOptionStats;
 }
   

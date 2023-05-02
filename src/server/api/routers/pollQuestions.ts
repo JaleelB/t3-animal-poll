@@ -44,21 +44,22 @@ export const pollRouter = createTRPCRouter({
   
     return newResponse;
   }),
-  // New procedure to fetch the total count of "yes" and "no" answers
+  // Procedure to fetch the total count of "yes" and "no" answers
   getTotalAnswers: publicProcedure.query(async ({ ctx }) => {
     const totalYes = await ctx.prisma.pollResponse.count({
       where: {
-        option: "yes",
+        option: "Yes",
       },
     });
     const totalNo = await ctx.prisma.pollResponse.count({
       where: {
-        option: "no",
+        option: "No",
       },
     });
     return { totalYes, totalNo };
   }),
-  // New procedure to fetch the percentage of responses for each option in every question
+  
+  //Procedure to fetch the percentage of responses for each option in every question
   getQuestionStatistics: publicProcedure.query(async ({ ctx }) => {
     const calculatePercentage = (count: number, total: number) => {
       return total > 0 ? Math.round((count / total) * 100) : 0;
@@ -71,6 +72,8 @@ export const pollRouter = createTRPCRouter({
         options: true,
       },
     });
+
+    console.log("questions", questions)
   
     const statistics = await Promise.all(
       questions.map(async (question) => {
@@ -86,7 +89,9 @@ export const pollRouter = createTRPCRouter({
   
         // Check if question.options is not null, and use an empty array as a fallback
         // Create a new variable to store options as an array of strings
-        const optionsArray: string[] = question.options ? (question.options as string[]) : [];
+        const optionsArray: string[] = question.options ? Object.values(question.options) : [];
+
+
   
         for (const option of optionsArray) {
           const optionCount = await ctx.prisma.pollResponse.count({

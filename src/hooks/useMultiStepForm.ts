@@ -3,13 +3,13 @@ import { useState, useEffect } from "react";
 import { api } from "../utils/api";
 import { PollData } from "~/lib/types";
 
-export const useMultiStepForm = (initialStep: number) => {
+export const useMultiStepPoll = (initialStep: number) => {
 
   const [step, setStep] = useState(initialStep);
   const [poll, setPoll] = useState<PollData | null>(null);
   const query = api.questions.getPoll.useQuery({ pollId: step });
   const length = api.questions.getLength.useQuery() as { data: number };
-
+  const submitMutation = api.questions.submit.useMutation();
 
   useEffect(() => {
     const fetchPoll = async () => {
@@ -39,12 +39,24 @@ export const useMultiStepForm = (initialStep: number) => {
   
 
   const nextStep = () => {
-    if( step < length.data) setStep((prevStep) => prevStep + 1);
+    if( step < length.data ) setStep((prevStep) => prevStep + 1);
   };
 
   const prevStep = () => {
-    if( step > 0) setStep((prevStep) => prevStep - 1);
+    if( step > 1 ) setStep((prevStep) => prevStep - 1);
   };
 
-  return { step, poll, nextStep, prevStep };
+  const submitAnswer = async (option: string) => {
+    try {
+      await submitMutation.mutateAsync({
+        pollQuestionId: poll?.id as number,
+        option,
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  
+
+  return { step, poll, nextStep, prevStep, submitAnswer };
 };

@@ -6,6 +6,6 @@ Animal Poll is a simple polling application that allows users to vote on their f
 - The app displays the total number of votes for each option.
 - The app shows the percentage of votes for each option.
 
-Technologies
+## Technologies
 - T3 Stack 
 - Supabase
